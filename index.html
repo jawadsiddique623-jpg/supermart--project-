@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>SuperMart - Sign in</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Login fixes: keep this AFTER style.css -->
+    <link rel="stylesheet" href="css/login-fixes.css">
+    <link rel="stylesheet" href="css/mobile.css">
+</head>
+
+<body class="login-body">
+
+    <div class="login-wrapper">
+        <!-- Left Side: Hero Banner -->
+        <div class="login-hero">
+            <div class="login-hero-top">
+                <div class="brand-badge">
+                    <div class="logo-box">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                    </div>
+                    <div class="brand-text">
+                        <h2>SuperMart</h2>
+                        <span>Smart Shopping, Better Life</span>
+                    </div>
+                </div>
+
+                <div class="login-hero-headline">
+                    <h1>Welcome to SuperMart</h1>
+                    <p>Fast billing. Smart stock. Better business.</p>
+                </div>
+            </div>
+
+            <div class="hero-art-container">
+                <img src="assets/images/login-hero.png" alt="SuperMart POS Terminal & Grocery Cart"
+                    class="hero-art-image" onerror="this.style.display='none'">
+            </div>
+
+            <div class="hero-feature-pills">
+                <div class="feature-pill">
+                    <i class="fa-solid fa-barcode"></i>
+                    <span>Barcode Scanning</span>
+                </div>
+                <div class="feature-pill">
+                    <i class="fa-solid fa-bolt"></i>
+                    <span>Instant Billing</span>
+                </div>
+                <div class="feature-pill">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Live Stock Tracking</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side: Login Card -->
+        <div class="login-card">
+            <div>
+                <div class="login-header">
+                    <div class="login-header-logo">
+                        <i class="fa-solid fa-store"></i>
+                    </div>
+                    <h2>SuperMart</h2>
+                    <p>Smart Shopping, Better Life</p>
+                </div>
+
+                <h3 class="login-title">Sign in to your account</h3>
+
+                <!-- Role Tabs -->
+                <div class="role-tabs">
+                    <button type="button" class="role-tab-btn active" id="tab-cashier" onclick="setRole('cashier')">
+                        <i class="fa-solid fa-cash-register"></i>
+                        <span>Cashier</span>
+                    </button>
+                    <button type="button" class="role-tab-btn" id="tab-admin" onclick="setRole('admin')">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span>Admin</span>
+                    </button>
+                </div>
+
+               
+
+                <!-- Login Form -->
+                <form id="login-form" onsubmit="handleLoginSubmit(event)" autocomplete="on">
+                    <div class="form-group">
+                        <label class="form-label" for="username">Username or Employee ID</label>
+                        <div class="input-with-icon">
+                            <i class="fa-solid fa-user"></i>
+                            <input type="text" id="username" class="form-control" placeholder="Enter username"
+                                autocomplete="username" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="password">Password</label>
+                        <div class="input-with-icon">
+                            <i class="fa-solid fa-lock"></i>
+                            <input type="password" id="password" class="form-control" placeholder="Enter password"
+                                autocomplete="current-password" required>
+                            <button type="button" class="password-toggle-btn" id="toggle-password"
+                                aria-label="Show password" onclick="togglePasswordVisibility()">
+                                <i class="fa-regular fa-eye" id="eye-icon"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="login-options">
+                        <label class="remember-me">
+                            <input type="checkbox" id="remember-me">
+                            <span>Remember me</span>
+                        </label>
+                        <a href="javascript:void(0)"
+                            onclick="showToast('Please contact your system administrator to reset your password.', 'info')"
+                            class="forgot-pass">
+                            Forgot password?
+                        </a>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary login-submit-btn" id="login-btn">
+                        <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                        <span id="login-btn-text">Sign in as Cashier</span>
+                    </button>
+
+                    <p style="text-align: center; font-size: 11.5px; color: var(--text-muted); margin-top: 4px;"
+                        id="login-sub-tip">
+                        Select the Admin tab to access the admin dashboard
+                    </p>
+                </form>
+            </div>
+
+            <div class="login-footer">
+                <div>
+                    <i class="fa-solid fa-location-dot" style="color: var(--primary);"></i>
+                    <span>Main Branch, Chattogram</span>
+                </div>
+                <div>
+                    <i class="fa-regular fa-calendar" style="color: var(--primary);"></i>
+                    <span class="live-date">Nov 9, 2026</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <script src="js/data.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        let currentRole = 'cashier';
+
+        // Demo box only on local development (localhost, 127.0.0.1, or file://)
+        const isLocalDev = ['localhost', '127.0.0.1', ''].includes(location.hostname);
+        if (isLocalDev) document.getElementById('demo-box').hidden = false;
+
+        function setRole(role) {
+            currentRole = role;
+            const isCashier = role === 'cashier';
+            document.getElementById('tab-cashier').classList.toggle('active', isCashier);
+            document.getElementById('tab-admin').classList.toggle('active', !isCashier);
+            document.getElementById('login-btn-text').textContent = isCashier ? 'Sign in as Cashier' : 'Sign in as Admin';
+            document.getElementById('login-sub-tip').textContent = isCashier
+                ? 'Select the Admin tab to access the admin dashboard'
+                : 'Cashier accounts cannot sign in on this tab';
+        }
+
+        function fillCashierDemo() {
+            document.getElementById('username').value = 'cashier';
+            document.getElementById('password').value = '12345678';
+            setRole('cashier');
+            showToast('Cashier demo credentials filled', 'info');
+        }
+
+        function togglePasswordVisibility() {
+            const passInput = document.getElementById('password');
+            const eyeIcon = document.getElementById('eye-icon');
+            const btn = document.getElementById('toggle-password');
+            const show = passInput.type === 'password';
+            passInput.type = show ? 'text' : 'password';
+            // Hidden -> plain eye (click to show). Visible -> slashed eye (click to hide).
+            eyeIcon.classList.toggle('fa-eye', !show);
+            eyeIcon.classList.toggle('fa-eye-slash', show);
+            btn.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+        }
+
+        async function handleLoginSubmit(e) {
+            e.preventDefault();
+            const btn = document.getElementById('login-btn');
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const rememberMe = document.getElementById('remember-me').checked;
+
+            btn.disabled = true;
+            const res = await Auth.login(username, password, currentRole, rememberMe);
+            btn.disabled = false;
+
+            if (!res.success) {
+                SoundFX.play('error');
+                showToast(res.error, 'error', 4500);
+            } else {
+                SoundFX.play('success');
+                showToast(`Welcome back, ${res.user.name}! Redirecting...`, 'success', 1500);
+                setTimeout(() => { window.location.href = res.redirectUrl; }, 800);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = Auth.getCurrentUser();
+            if (user && user.role === 'admin') setRole('admin');
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,67 @@
+/* Login page fixes. Load AFTER style.css */
+
+[hidden] { display: none !important; }
+
+/* Buttons/inputs inherit the site font (fixes the Arial-looking Fill button) */
+button, input, select, textarea { font-family: inherit; }
+
+/* Fix squashed word spacing */
+.login-card,
+.login-card h2,
+.login-card h3,
+.login-card label,
+.login-card .form-label,
+.login-card .remember-me span {
+    letter-spacing: normal;
+    word-spacing: normal;
+}
+
+.login-title {
+    font-size: 19px;
+    font-weight: 800;
+    margin: 0 0 14px;
+    text-align: center;
+}
+
+/* Password eye icon sits INSIDE the input */
+.input-with-icon { position: relative; }
+.input-with-icon .form-control { padding-right: 48px; }
+.password-toggle-btn {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    color: var(--text-muted, #64748b);
+}
+.password-toggle-btn:hover { color: var(--primary, #2563eb); }
+
+/* Demo fill button: one clean line + small credentials text */
+.quick-cred-pill {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    font-weight: 700;
+}
+.quick-cred-pill small {
+    font-size: 11px;
+    font-weight: 500;
+    opacity: 0.7;
+}
+
+/* Remember me: themed checkbox + better contrast */
+.remember-me input[type="checkbox"] {
+    accent-color: var(--primary, #2563eb);
+    width: 16px;
+    height: 16px;
+}
+.remember-me span { color: #475569; }

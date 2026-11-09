@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>SuperMart - Cashier POS</title>
+    <!-- Font Awesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/mobile.css">
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Left Sidebar Navigation -->
+        <aside class="app-sidebar">
+            <a href="pos.html" class="sidebar-logo">
+                <div class="sidebar-logo-icon">
+                    <i class="fa-solid fa-cube"></i>
+                </div>
+                <div class="sidebar-logo-text">
+                    <h3>SuperMart</h3>
+                    <span>Smart Shopping</span>
+                </div>
+            </a>
+
+            <ul class="sidebar-nav">
+                <li class="nav-item">
+                    <a href="pos.html" class="nav-link active" title="POS Billing">
+                        <i class="fa-solid fa-house"></i>
+                        <span>POS</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <button type="button" class="nav-link" onclick="openManualSearch()" title="View Products">
+                        <i class="fa-solid fa-box"></i>
+                        <span>Products</span>
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button type="button" class="nav-link" onclick="openModal('quick-stock-modal')" title="Check Stock">
+                        <i class="fa-solid fa-warehouse"></i>
+                        <span>Stock</span>
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button type="button" class="nav-link" onclick="openModal('shift-summary-modal')" title="Shift Reports">
+                        <i class="fa-solid fa-chart-simple"></i>
+                        <span>Reports</span>
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button type="button" class="nav-link" onclick="openModal('customers-modal')" title="Customers">
+                        <i class="fa-solid fa-user-group"></i>
+                        <span>Customers</span>
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button type="button" class="nav-link" onclick="openModal('settings-modal')" title="Settings">
+                        <i class="fa-solid fa-gear"></i>
+                        <span>Settings</span>
+                    </button>
+                </li>
+            </ul>
+
+            <!-- Sidebar Bottom Promotion / Growth Card -->
+            <div class="sidebar-bottom">
+                <div class="sidebar-promo-card">
+                    <i class="fa-solid fa-arrow-trend-up"></i>
+                    <p>Better Business<br>Bigger Growth</p>
+                </div>
+
+                <div class="sidebar-user-pill" title="Current Staff Profile">
+                    <div class="sidebar-avatar">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div class="sidebar-user-info" style="display: none;">
+                        <div class="user-name user-display-name">Cashier</div>
+                        <div class="user-role user-display-role">Cashier</div>
+                    </div>
+                </div>
+
+                <button type="button" class="btn btn-ghost btn-sm" onclick="Auth.logout()" style="width: 100%; margin-top: 8px;" title="Logout">
+                    <i class="fa-solid fa-arrow-right-from-bracket" style="color: var(--danger);"></i>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="app-main">
+            <!-- Top Header Bar -->
+            <header class="glass-card top-navbar">
+                <div class="top-nav-left">
+                    <div class="store-badge">
+                        <div class="store-icon">
+                            <i class="fa-solid fa-store"></i>
+                        </div>
+                        <div>
+                            <div class="store-title">SuperMart</div>
+                            <span class="branch-pill">
+                                <i class="fa-solid fa-location-dot" style="font-size: 10px; color: var(--primary);"></i>
+                                <span id="branch-name">Main Branch, Chattogram</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div style="height: 24px; width: 1px; background: #e2e8f0; margin: 0 4px;"></div>
+
+                    <div class="branch-pill">
+                        <i class="fa-solid fa-user-tie" style="color: var(--primary);"></i>
+                        <span>Cashier: <strong id="cashier-name">Jawad Siddik</strong></span>
+                    </div>
+                </div>
+
+                <div class="top-nav-right">
+                    <!-- Live Clock and Date -->
+                    <div class="clock-badge">
+                        <span><i class="fa-regular fa-calendar" style="color: var(--primary); margin-right: 4px;"></i> <span class="live-date">Nov 8, 2026</span></span>
+                        <span><i class="fa-regular fa-clock" style="color: var(--primary); margin-right: 4px;"></i> <span class="live-time">08:24:17 PM</span></span>
+                    </div>
+
+                    <!-- New Sale Button -->
+                    <button type="button" class="btn btn-primary" onclick="startNewSale()">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>New Sale</span>
+                    </button>
+
+                    <!-- Link to Admin (shown if user has admin privileges or want to switch) -->
+                    <a href="admin.html" class="btn btn-outline btn-sm" title="Go to Admin Dashboard">
+                        <i class="fa-solid fa-shield-halved" style="color: var(--primary);"></i>
+                        <span>Admin</span>
+                    </a>
+                </div>
+            </header>
+
+            <!-- POS 3-Column Grid Layout -->
+            <div class="pos-layout">
+                <!-- Column 1: Middle Workspace (Scanner Bar + Quick Picks + Cart Table) -->
+                <div class="pos-center-pane">
+                    <!-- Barcode Scanner Input Bar -->
+                    <div class="glass-card barcode-action-bar">
+                        <div class="barcode-scanner-icon" title="Barcode Scanner Ready">
+                            <i class="fa-solid fa-barcode"></i>
+                        </div>
+                        <div class="barcode-input-wrapper">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" id="barcode-input" class="barcode-input" placeholder="Scan barcode or type number + Enter (e.g. 100001)..." autofocus autocomplete="off">
+                        </div>
+                        <button type="button" class="btn btn-outline" onclick="openManualSearch()">
+                            <i class="fa-solid fa-list-check" style="color: var(--primary);"></i>
+                            <span>Manual Search</span>
+                        </button>
+                    </div>
+
+                    <!-- Quick Category Bar -->
+                    <div class="quick-picks-bar" id="quick-picks-bar">
+                        <!-- Populated by pos.js -->
+                    </div>
+
+                    <!-- Cart Table Card -->
+                    <div class="glass-card cart-card">
+                        <div class="cart-header">
+                            <div class="cart-title">
+                                <i class="fa-solid fa-cart-shopping"></i>
+                                <span>Current Cart</span>
+                                <span class="cart-count-badge" id="cart-items-count">(0 Items)</span>
+                            </div>
+                            <button type="button" class="btn btn-ghost btn-sm" onclick="clearCart()" style="color: var(--danger);">
+                                <i class="fa-solid fa-trash-can"></i>
+                                <span>Clear Cart</span>
+                            </button>
+                        </div>
+
+                        <!-- Cart Table -->
+                        <div class="table-responsive">
+                            <table class="pos-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 30px;">#</th>
+                                        <th>Product</th>
+                                        <th>Barcode</th>
+                                        <th>Unit Price</th>
+                                        <th>Qty</th>
+                                        <th>Line Total</th>
+                                        <th style="text-align: center;">Remove</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="cart-table-body">
+                                    <!-- Dynamic Rows via pos.js -->
+                                </tbody>
+                            </table>
+
+                            <!-- Empty Cart State -->
+                            <div class="cart-empty-state" id="cart-empty-state">
+                                <i class="fa-solid fa-basket-shopping"></i>
+                                <h4>Your cart is empty</h4>
+                                <p style="font-size: 13px;">Scan a barcode or click "Manual Search" to add products</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Column 2: Bill Summary Card -->
+                <div class="glass-card bill-summary-card">
+                    <div class="bill-summary-title">
+                        <i class="fa-regular fa-file-lines"></i>
+                        <span>Bill Summary</span>
+                    </div>
+
+                    <div class="summary-rows">
+                        <div class="summary-row">
+                            <span>Subtotal:</span>
+                            <span class="value" id="bill-subtotal">৳ 0.00</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Discount:</span>
+                            <div class="discount-input-wrap">
+                                <input type="number" id="discount-amount" class="discount-input" value="0" min="0" oninput="recalculateBill()">
+                                <span style="font-size: 12px; font-weight: 700;">৳</span>
+                            </div>
+                        </div>
+                        <div class="summary-row">
+                            <span>VAT (5%):</span>
+                            <span class="value" id="bill-vat">৳ 0.00</span>
+                        </div>
+                    </div>
+
+                    <div class="grand-total-box">
+                        <span>Grand Total:</span>
+                        <div class="total-amount" id="bill-grand-total">৳ 0.00</div>
+                    </div>
+
+                    <div>
+                        <div class="payment-methods-title">Payment Method:</div>
+                        <div class="payment-method-selector">
+                            <button type="button" class="pay-method-btn active" data-method="Cash" onclick="selectPaymentMethod('Cash')">
+                                <i class="fa-solid fa-money-bill-1-wave"></i>
+                                <span>Cash</span>
+                            </button>
+                            <button type="button" class="pay-method-btn" data-method="Card" onclick="selectPaymentMethod('Card')">
+                                <i class="fa-regular fa-credit-card"></i>
+                                <span>Card</span>
+                            </button>
+                            <button type="button" class="pay-method-btn bkash" data-method="bKash" onclick="selectPaymentMethod('bKash')">
+                                <i class="fa-solid fa-mobile-screen-button"></i>
+                                <span>bKash</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Cash Amount Received & Change Due -->
+                    <div class="cash-details-box" id="cash-details-box">
+                        <div class="cash-input-row">
+                            <span>Amount Received:</span>
+                            <div style="display: flex; align-items: center; gap: 4px;">
+                                <input type="number" id="amount-received" class="cash-input" value="0" min="0" oninput="updateChangeDue()">
+                                <span style="font-size: 13px; font-weight: 700;">৳</span>
+                            </div>
+                        </div>
+                        <div class="change-due-row">
+                            <span>Change Due:</span>
+                            <span id="change-due-amount">৳ 0.00</span>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="bill-actions">
+                        <button type="button" class="btn btn-success btn-lg" onclick="submitAndGenerateBill()" id="btn-submit-bill">
+                            <i class="fa-solid fa-check"></i>
+                            <span>Submit &amp; Generate Bill</span>
+                        </button>
+                        <button type="button" class="btn btn-outline" onclick="printCurrentReceipt()">
+                            <i class="fa-solid fa-print"></i>
+                            <span>Print Receipt</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Column 3: Thermal Receipt Preview Card -->
+                <div class="glass-card receipt-preview-card receipt-preview-pane">
+                    <div class="receipt-preview-header">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <i class="fa-solid fa-receipt"></i>
+                            <span>Receipt Preview</span>
+                        </div>
+                        <button type="button" class="btn btn-ghost btn-sm" onclick="printCurrentReceipt()" title="Print this receipt">
+                            <i class="fa-solid fa-print"></i>
+                        </button>
+                    </div>
+
+                    <div id="receipt-preview-content">
+                        <!-- Populated by pos.js -->
+                    </div>
+                </div>
+
+                <!-- Bottom Overview Row: Current Cashier Shift Performance -->
+                <div class="glass-card pos-bottom-bar">
+                    <div class="shift-stat-item">
+                        <div class="shift-stat-icon sales">
+                            <i class="fa-solid fa-cart-shopping"></i>
+                        </div>
+                        <div class="shift-stat-details">
+                            <span class="shift-stat-label">Today's Sales</span>
+                            <div class="shift-stat-val">
+                                <span id="shift-sales-val">৳ 0.00</span>
+                                <span class="trend-pill"><i class="fa-solid fa-arrow-up"></i> +12%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="shift-stat-item">
+                        <div class="shift-stat-icon bills">
+                            <i class="fa-regular fa-file-lines"></i>
+                        </div>
+                        <div class="shift-stat-details">
+                            <span class="shift-stat-label">Bills Count</span>
+                            <div class="shift-stat-val">
+                                <span id="shift-bills-val">0</span>
+                                <span class="trend-pill"><i class="fa-solid fa-arrow-up"></i> +8%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="shift-stat-item">
+                        <div class="shift-stat-icon items">
+                            <i class="fa-solid fa-box-open"></i>
+                        </div>
+                        <div class="shift-stat-details">
+                            <span class="shift-stat-label">Items Sold</span>
+                            <div class="shift-stat-val">
+                                <span id="shift-items-val">0</span>
+                                <span class="trend-pill"><i class="fa-solid fa-arrow-up"></i> +10%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <button type="button" class="btn btn-outline" id="hold-bill-btn" onclick="holdCurrentBill()" oncontextmenu="event.preventDefault(); showHeldBillsModal();">
+                            <i class="fa-solid fa-pause"></i>
+                            <span>Hold Bill</span>
+                        </button>
+                        <button type="button" class="btn btn-ghost btn-sm" onclick="showHeldBillsModal()" style="font-size: 11px; margin-top: 4px; display: block; width: 100%; text-align: center;">
+                            View Held Bills
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ==========================================================================
+         MODALS
+         ========================================================================== -->
+
+    <!-- Manual Search Modal -->
+    <div class="modal-overlay" id="manual-search-modal">
+        <div class="modal-dialog" style="max-width: 650px;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-magnifying-glass" style="color: var(--primary); margin-right: 8px;"></i> Manual Product Search</h3>
+                <button type="button" class="modal-close-btn" onclick="closeModal('manual-search-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="display: flex; gap: 10px; margin-bottom: 16px;">
+                    <input type="text" id="manual-search-input" class="form-control" placeholder="Search by product name or barcode..." oninput="renderManualSearchResults()">
+                    <select id="manual-search-category" class="form-control" style="max-width: 180px;" onchange="renderManualSearchResults()">
+                        <option value="All">All Categories</option>
+                    </select>
+                </div>
+                <div id="manual-search-results" style="max-height: 380px; overflow-y: auto;">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeModal('manual-search-modal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Held Bills Modal -->
+    <div class="modal-overlay" id="held-bills-modal">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-pause" style="color: var(--warning); margin-right: 8px;"></i> Held Bills</h3>
+                <button type="button" class="modal-close-btn" onclick="closeModal('held-bills-modal')">&times;</button>
+            </div>
+            <div class="modal-body" id="held-bills-modal-body">
+                <!-- Populated dynamically -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeModal('held-bills-modal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stock Modal -->
+    <div class="modal-overlay" id="quick-stock-modal">
+        <div class="modal-dialog" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-warehouse" style="color: var(--primary); margin-right: 8px;"></i> Quick Stock Check</h3>
+                <button type="button" class="modal-close-btn" onclick="closeModal('quick-stock-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="max-height: 350px; overflow-y: auto;">
+                    <table class="custom-table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Barcode</th>
+                                <th>Price</th>
+                                <th>Available Stock</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <script>
+                                document.write(DB.getProducts().map(p => `
+                                    <tr>
+                                        <td><strong>${p.name}</strong></td>
+                                        <td class="mono">${p.barcode}</td>
+                                        <td>৳ ${p.sellingPrice}</td>
+                                        <td><span class="badge ${p.stock <= p.reorderLevel ? 'badge-danger' : 'badge-success'}">${p.stock} ${p.unit || 'units'}</span></td>
+                                    </tr>
+                                `).join(''));
+                            </script>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeModal('quick-stock-modal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shift Summary Modal -->
+    <div class="modal-overlay" id="shift-summary-modal">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-chart-pie" style="color: var(--primary); margin-right: 8px;"></i> Current Shift Summary</h3>
+                <button type="button" class="modal-close-btn" onclick="closeModal('shift-summary-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="padding: 14px; background: #f8fafc; border-radius: 14px; margin-bottom: 12px; border: 1px solid #e2e8f0;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span>Cashier:</span>
+                        <strong class="user-display-name">Jawad Siddik</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span>Branch:</span>
+                        <span class="user-display-branch">Main Branch, Chattogram</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>Date:</span>
+                        <span class="live-date">Nov 8, 2026</span>
+                    </div>
+                </div>
+                <p style="font-size: 13px; color: var(--text-muted); text-align: center;">All bills recorded during this cashier shift are logged and accessible in the Admin Dashboard.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeModal('shift-summary-modal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customers Modal -->
+    <div class="modal-overlay" id="customers-modal">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-users" style="color: var(--primary); margin-right: 8px;"></i> Customer Directory</h3>
+                <button type="button" class="modal-close-btn" onclick="closeModal('customers-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size: 13.5px; margin-bottom: 14px;">Walk-in Customer / Registered Members:</p>
+                <div style="padding: 10px; border-radius: 10px; background: #eff6ff; border: 1px solid #bfdbfe; margin-bottom: 8px;">
+                    <strong>Walk-in Retail Customer</strong> (Default)
+                    <div style="font-size: 12px; color: var(--text-muted);">Points: N/A &bull; Tier: Regular</div>
+                </div>
+                <div style="padding: 10px; border-radius: 10px; background: #f8fafc; border: 1px solid #e2e8f0;">
+                    <strong>Mohammad Rafiq</strong> (+880 1711-987654)
+                    <div style="font-size: 12px; color: var(--text-muted);">Loyalty Points: 420 &bull; Tier: Gold Member</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeModal('customers-modal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Settings Modal -->
+    <div class="modal-overlay" id="settings-modal">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-gear" style="color: var(--primary); margin-right: 8px;"></i> POS Terminal Settings</h3>
+                <button type="button" class="modal-close-btn" onclick="closeModal('settings-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="remember-me">
+                        <input type="checkbox" id="toggle-sound-chk" checked onchange="toggleSoundSetting(this.checked)">
+                        <span style="font-weight: 600; font-size: 13.5px;">Enable Barcode Scanner Audio Beep &amp; Chime</span>
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Receipt Printer Interface</label>
+                    <input type="text" class="form-control" value="Thermal 80mm Standard (Auto-detect)" readonly>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="closeModal('settings-modal')">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications Root -->
+    <div id="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="js/data.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/pos.js"></script>
+    <script>
+        function toggleSoundSetting(val) {
+            DB.saveSettings({ soundEnabled: val });
+            showToast(`Sound effects ${val ? 'enabled' : 'muted'}`, 'info');
+        }
+    </script>
+</body>
+</html>
+
